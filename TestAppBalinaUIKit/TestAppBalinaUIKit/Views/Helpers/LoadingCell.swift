@@ -16,8 +16,7 @@ final class LoadingCell: UITableViewCell {
         var view = UIActivityIndicatorView()
         view.hidesWhenStopped = true
         view.style = .medium
-        view.color = .blue
-        view.backgroundColor = .clear
+        view.color = .black
         return view
     }()
     

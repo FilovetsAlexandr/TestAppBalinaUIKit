@@ -8,32 +8,37 @@
 import UIKit
 
 final class PhotoCell: UITableViewCell {
- 
+
     //MARK: - Properties
+
     static var key = "PhotoCell"
-    
+
     private lazy var mainView: UIView = {
         var view = UIView()
-        view.backgroundColor = .blue.withAlphaComponent(0.5)
+        view.backgroundColor = .systemGray6 // Нейтральный цвет
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowRadius = 4
-        view.layer.shadowOpacity = 0.4
-        view.layer.shadowOffset = CGSize(width: 5, height: 4)
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowOffset = CGSize(width: 2, height: 2)
         view.layer.cornerRadius = 20
         return view
     }()
-    
+
     private lazy var photoImage: UIImageView = {
         var view = UIImageView()
-        view.contentMode = .scaleToFill
-        view.tintColor = .black
+        view.contentMode = .scaleAspectFill
+        view.clipsToBounds = true // Обрезка для круглой формы
+        view.layer.cornerRadius = 50 // Делает изображение круглым при размере 100x100
+        view.layer.borderWidth = 2
+        view.layer.borderColor = UIColor.systemGray4.cgColor
         return view
     }()
-    
+
     private lazy var nameLabel: UILabel = {
         var label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         label.numberOfLines = 0
+        label.textColor = .systemGray // Нейтральный цвет текста
         return label
     }()
 
@@ -44,50 +49,51 @@ final class PhotoCell: UITableViewCell {
         contentView.addSubview(mainView)
         mainView.addSubview(photoImage)
         mainView.addSubview(nameLabel)
+        setupConstraints() // Настраиваем констрейнты
     }
-    
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     //MARK: - UI
     override func prepareForReuse() {
         super.prepareForReuse()
         photoImage.image = UIImage()
         nameLabel.text = ""
     }
-    
-    override func updateConstraints() {
-        super.updateConstraints()
-        
+
+    private func setupConstraints() {
         mainView.translatesAutoresizingMaskIntoConstraints = false
+        photoImage.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
+            // mainView constraints
             mainView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             mainView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            mainView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            mainView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
-        ])
-        
-        photoImage.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
+            mainView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 50), // Увеличен отступ сверху
+            mainView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -50), // Увеличен отступ снизу
+            
+            // photoImage constraints
             photoImage.heightAnchor.constraint(equalToConstant: 100),
             photoImage.widthAnchor.constraint(equalToConstant: 100),
-            photoImage.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 8),
-            photoImage.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 24),
-            photoImage.bottomAnchor.constraint(equalTo: mainView.bottomAnchor, constant: -24)
-        ])
-        
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
+            photoImage.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 16),
+            photoImage.centerYAnchor.constraint(equalTo: mainView.centerYAnchor),
+
+            // nameLabel constraints
             nameLabel.leadingAnchor.constraint(equalTo: photoImage.trailingAnchor, constant: 16),
             nameLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -16),
-            nameLabel.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 16)
+            nameLabel.centerYAnchor.constraint(equalTo: mainView.centerYAnchor)
         ])
     }
-    
-    func configureUI(photo: UIImage, text: String) {
-        photoImage.image = photo
-        nameLabel.text = text
-    }
+
+    func configureUI(photo: UIImage?, text: String) {
+           if let image = photo {
+               photoImage.image = image
+           } else {
+               photoImage.image = UIImage(systemName: "questionmark") // Системная иконка
+           }
+           nameLabel.text = text
+       }
 }
